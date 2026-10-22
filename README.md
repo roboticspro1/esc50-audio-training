@@ -11,6 +11,8 @@ This project trains and evaluates a convolutional neural network on the [ESC-50]
 
 The ESC-50 audio dataset and local virtual environments are deliberately excluded from this repository because they are large and machine-specific.
 
+> Notebook outputs are intentionally cleared before publishing so GitHub can load the notebooks quickly. Reproducible result artifacts are retained in `outputs/`.
+
 ## Dataset layout
 
 Download or obtain ESC-50 separately, then unpack it so the notebooks can find:
@@ -45,6 +47,86 @@ pl.Trainer(accelerator="auto", devices=1)
 - Fold 5: final testing
 
 The baseline completed 25 epochs and reached about 49.5% validation accuracy. The recorded improved-checkpoint test result is 48.7% (195/400 clips). This result should be interpreted as one experiment, not a final benchmark.
+
+## Changes from the baseline
+
+The data split, 8 kHz audio preprocessing, 50-class CNN architecture, and batch size remain unchanged. The experiment files make the following training changes.
+
+| Area | Baseline | Experiment |
+| --- | --- | --- |
+| Hardware selection | `accelerator="gpu"` | `accelerator="auto"`, which works on macOS without NVIDIA CUDA |
+| Optimizer | Adam with learning rate `1e-3` | AdamW with learning rate `3e-4` and weight decay `1e-4` |
+| Epoch limit | 25 epochs | Up to 100 epochs |
+| Checkpoint | Saves the final epoch manually | Saves the checkpoint with the highest validation accuracy |
+| Early stopping | Not used | Stops after validation accuracy fails to improve for the configured patience |
+| Test artifact | `test_predictions.csv` | `test_predictions_best.csv` |
+
+### Hardware-compatible trainer
+
+```python
+trainer = pl.Trainer(accelerator="auto", devices=1)
+```
+
+### Added callback import
+
+```python
+from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
+```
+
+### AdamW optimizer
+
+```python
+def configure_optimizers(self):
+    optimizer = torch.optim.AdamW(
+        self.parameters(),
+        lr=3e-4,
+        weight_decay=1e-4,
+    )
+    return optimizer
+```
+
+### Validation checkpoint and early stopping
+
+```python
+checkpoint_callback = ModelCheckpoint(
+    dirpath="outputs",
+    filename="audionet-best",
+    monitor="val_acc",
+    mode="max",
+    save_top_k=1,
+)
+
+early_stop = EarlyStopping(
+    monitor="val_acc",
+    mode="max",
+    patience=8,
+)
+
+trainer = pl.Trainer(
+    accelerator="auto",
+    devices=1,
+    max_epochs=100,
+    callbacks=[checkpoint_callback, early_stop],
+)
+
+trainer.fit(audionet, train_loader, val_loader)
+```
+
+### Testing the selected checkpoint
+
+`test-improved.ipynb` loads the best checkpoint from the first experiment block and writes a separately named prediction file:
+
+```python
+ckpt_path = Path("outputs/audionet-best.ckpt")
+audionet = AudioNet.load_from_checkpoint(ckpt_path)
+
+pred_path = output_dir / "test_predictions_best.csv"
+predictions.to_csv(pred_path, index=False)
+```
+
+## Current experiment note
+
+`train-improved.ipynb` currently contains a second checkpointing/training section after the first one. It creates `best-audionet.ckpt` and then saves `audionet-improved-last.ckpt`. This is retained as a record of the experiment, but a future cleanup should keep just one training section so every result maps to one clearly defined configuration.
 
 ## Attribution
 
