@@ -11,11 +11,10 @@ This submission trains a deep-learning model to classify 50 types of environment
 
 ## Submission files
 
-- `train-optimized.ipynb`: visual training notebook with explanation, full displayed code, training cell, spectrogram, and learning curves.
-- `test-optimized.ipynb`: visual evaluation notebook with the final test result, confusion matrix, per-class accuracy, and prediction examples.
+- `train-optimized.ipynb`: self-contained visual training notebook with the full model code, training cell, spectrogram, and learning curves.
+- `test-optimized.ipynb`: self-contained visual evaluation notebook with the full evaluation code, final test result, confusion matrix, per-class accuracy, and prediction examples.
 - `train.ipynb` / `test.ipynb`: preserved original baseline version.
 - `train-improved.ipynb` / `test-improved.ipynb`: preserved first-improved version.
-- `train-optimized.py` and `test-optimized.py`: required support scripts used by the two notebooks.
 - `outputs/optimized/`: saved best checkpoint, charts, per-class metrics, training history, and test predictions.
 - `requirements.txt`: compatible package versions.
 
