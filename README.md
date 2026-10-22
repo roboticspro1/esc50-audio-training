@@ -7,7 +7,6 @@ This project trains and evaluates a convolutional neural network on the [ESC-50]
 - `train.ipynb` and `test.ipynb`: baseline training and evaluation notebooks.
 - `train-improved.ipynb` and `test-improved.ipynb`: experiment notebooks with AdamW, validation checkpointing, and early stopping.
 - `train-optimized.ipynb` and `test-optimized.ipynb`: a separate, higher-capacity experiment with augmentation, automatic checkpoint selection, and visual reports.
-- `train.py`, `test.py`, `train-improved.py`, and `test-improved.py`: plain-Python exports of the same notebook code for reliable viewing on GitHub.
 - `train-optimized.py` and `test-optimized.py`: the fully reproducible optimized training and evaluation scripts.
 - `outputs/`: saved checkpoints, prediction results, and charts.
 - `requirements.txt`: compatible Python packages for macOS.
@@ -15,17 +14,6 @@ This project trains and evaluates a convolutional neural network on the [ESC-50]
 The ESC-50 audio dataset and local virtual environments are deliberately excluded from this repository because they are large and machine-specific.
 
 > Notebook outputs are intentionally cleared before publishing so GitHub can load the notebooks quickly. Reproducible result artifacts are retained in `outputs/`.
-
-## Viewing the code on GitHub
-
-GitHub sometimes fails to render Jupyter notebook previews even when the notebook file is valid. If a notebook page shows a spinner or an "Unable to render code block" message, open its matching `.py` file instead. The `.py` export contains the same executable code, without notebook cell boundaries or outputs:
-
-- `train.ipynb` → `train.py`
-- `test.ipynb` → `test.py`
-- `train-improved.ipynb` → `train-improved.py`
-- `test-improved.ipynb` → `test-improved.py`
-- `train-optimized.ipynb` → `train-optimized.py`
-- `test-optimized.ipynb` → `test-optimized.py`
 
 ## Dataset layout
 
