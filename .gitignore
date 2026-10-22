@@ -1,0 +1,15 @@
+# Local environments and Jupyter state
+.venv/
+.venv*/
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+.DS_Store
+*_recovered.ipynb
+
+# Large local dataset (download/unpack separately; do not publish)
+ESC-50-master/
+ESC-50-master.zip
+
+# Lightning runtime logs
+lightning_logs/

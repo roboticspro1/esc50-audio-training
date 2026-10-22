@@ -1,0 +1,10 @@
+numpy<2
+torch==2.2.2
+torchaudio==2.2.2
+soundfile
+pytorch-lightning==2.6.6
+torchmetrics
+pandas
+matplotlib
+jupyterlab
+ipykernel
