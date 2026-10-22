@@ -6,8 +6,10 @@ This project trains and evaluates a convolutional neural network on the [ESC-50]
 
 - `train.ipynb` and `test.ipynb`: baseline training and evaluation notebooks.
 - `train-improved.ipynb` and `test-improved.ipynb`: experiment notebooks with AdamW, validation checkpointing, and early stopping.
+- `train-optimized.ipynb` and `test-optimized.ipynb`: a separate, higher-capacity experiment with augmentation, automatic checkpoint selection, and visual reports.
 - `train.py`, `test.py`, `train-improved.py`, and `test-improved.py`: plain-Python exports of the same notebook code for reliable viewing on GitHub.
-- `outputs/`: saved checkpoints and CSV prediction results.
+- `train-optimized.py` and `test-optimized.py`: the fully reproducible optimized training and evaluation scripts.
+- `outputs/`: saved checkpoints, prediction results, and charts.
 - `requirements.txt`: compatible Python packages for macOS.
 
 The ESC-50 audio dataset and local virtual environments are deliberately excluded from this repository because they are large and machine-specific.
@@ -22,6 +24,8 @@ GitHub sometimes fails to render Jupyter notebook previews even when the noteboo
 - `test.ipynb` → `test.py`
 - `train-improved.ipynb` → `train-improved.py`
 - `test-improved.ipynb` → `test-improved.py`
+- `train-optimized.ipynb` → `train-optimized.py`
+- `test-optimized.ipynb` → `test-optimized.py`
 
 ## Dataset layout
 
@@ -56,7 +60,35 @@ pl.Trainer(accelerator="auto", devices=1)
 - Fold 4: validation
 - Fold 5: final testing
 
-The baseline completed 25 epochs and reached about 49.5% validation accuracy. The recorded improved-checkpoint test result is 48.7% (195/400 clips). This result should be interpreted as one experiment, not a final benchmark.
+The baseline completed 25 epochs and reached about 49.5% validation accuracy. The recorded improved-checkpoint test result is 48.7% (195/400 clips).
+
+The separate optimized experiment reached **67.9% best validation accuracy** and **72.0% final test accuracy (288/400 clips)**. It uses the same held-out test fold, but this is still one experimental result rather than a general benchmark.
+
+## Optimized experiment
+
+The optimized files are new additions; the baseline and earlier improved notebooks were not changed. The experiment uses 16 kHz log-mel spectrograms, a residual CNN, AdamW, label smoothing, learning-rate reduction, waveform gain and spectrogram masking augmentation, early stopping, and best-validation checkpoint selection.
+
+Run it from an activated environment with:
+
+```bash
+python train-optimized.py
+python test-optimized.py
+```
+
+The selected model is saved as `outputs/optimized/optimized-best.ckpt`. Evaluation writes these useful visual artifacts to `outputs/optimized/`:
+
+- `sample_spectrogram.png`: example model input after audio preprocessing.
+- `training_curves.png`: training/validation loss, accuracy, and macro-F1 across epochs.
+- `confusion_matrix.png`: normalized per-class error patterns.
+- `per_class_accuracy.png` and `per_class_accuracy.csv`: the strongest and weakest classes.
+- `prediction_examples.png`: correctly and incorrectly classified test clips.
+- `optimized_test_predictions.csv`: every test prediction, true category, and correctness flag.
+
+| Result | Earlier improved experiment | Optimized experiment |
+| --- | ---: | ---: |
+| Test accuracy | 48.7% (195/400) | **72.0% (288/400)** |
+| Saved model | `outputs/audionet-best.ckpt` | `outputs/optimized/optimized-best.ckpt` |
+| Visual reporting | CSV predictions | Curves, confusion matrix, per-class chart, and example predictions |
 
 ## Changes from the baseline
 
